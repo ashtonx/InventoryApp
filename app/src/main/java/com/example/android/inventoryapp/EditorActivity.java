@@ -1,5 +1,6 @@
 package com.example.android.inventoryapp;
 
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -13,22 +14,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
-public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int EXISTING_INVENTORY_LOADER_ID = 1;
+    private static final int SELECT_FILE = 1;
+
     private EditText mNameEditText;
     private EditText mDescriptionEditText;
-    private EditText mImageUriEditText; //todo change later
     private EditText mQuantityEditText;
     private EditText mPriceEditText;
 
     private Uri mCurrItemUri;
+    private Uri mImageUri;
 
-    @Override
+    private boolean mProductHasChanged = false;
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            mProductHasChanged = true;
+            return false;
+        }
+    };
+
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
@@ -36,20 +50,32 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         Intent intent = getIntent();
         mCurrItemUri = intent.getData();
 
-        if (mCurrItemUri == null){
+        if (mCurrItemUri == null) {
             setTitle("Add a product");
             invalidateOptionsMenu();
-        }
-        else setTitle("Edit product");
+        } else setTitle("Edit product");
 
         //todo change later
         mNameEditText = (EditText) findViewById(R.id.edit_product_name);
+        mNameEditText.setOnTouchListener(mTouchListener);
         mDescriptionEditText = (EditText) findViewById(R.id.edit_product_description);
-        mImageUriEditText = (EditText) findViewById(R.id.edit_product_image_uri);
+        mDescriptionEditText.setOnTouchListener(mTouchListener);
+        Button mImageUriButton = (Button) findViewById(R.id.edit_button_select_image);
+        mImageUriButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
+            }
+        });
         mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
+        mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
+        mPriceEditText.setOnTouchListener(mTouchListener);
 
-        if (mCurrItemUri!=null){
+        if (mCurrItemUri != null) {
             getLoaderManager().initLoader(EXISTING_INVENTORY_LOADER_ID, null, this);
         }
     }
@@ -63,12 +89,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 ProductEntry.COL_PRODUCT_QUANTITY,
                 ProductEntry.COL_PRODUCT_PRICE
         };
-        return new CursorLoader(this, mCurrItemUri, projection, null,null,null);
+        return new CursorLoader(this, mCurrItemUri, projection, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data.moveToFirst()){
+        if (data.moveToFirst()) {
             int nameColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_NAME);
             int descriptionColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_DESCRIPTION);
             int imageUriColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_IMG_URI);
@@ -77,7 +103,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
             mNameEditText.setText(data.getString(nameColumnIndex));
             mDescriptionEditText.setText(data.getString(descriptionColumnIndex));
-            mImageUriEditText.setText(data.getString(imageUriColumnIndex));
+            mImageUri = Uri.parse(data.getString(imageUriColumnIndex));
             mQuantityEditText.setText(Integer.toString(data.getInt(quantityColumnIndex)));
             mPriceEditText.setText(Integer.toString(data.getInt(priceColumnIndex)));
         }
@@ -85,11 +111,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mNameEditText.setText("");
-        mDescriptionEditText.setText("");
-        mImageUriEditText.setText("");
-        mQuantityEditText.setText("0");
-        mPriceEditText.setText("0");
+//        mNameEditText.setText("");
+//        mDescriptionEditText.setText("");
+//        mQuantityEditText.setText("0");
+//        mPriceEditText.setText("0");
     }
 
     @Override
@@ -101,7 +126,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (mCurrItemUri == null){
+        if (mCurrItemUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
         }
@@ -130,12 +155,21 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 //        super.onBackPressed();
 //    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_FILE && resultCode == Activity.RESULT_OK) {
+            if (data != null)
+                mImageUri = data.getData();
+        }
+    }
+
 
     //helpers
-    private void saveProduct(){
+    private void saveProduct() {
         String nameString = mNameEditText.getText().toString().trim();
         String descriptionString = mDescriptionEditText.getText().toString().trim();
-        String imageUriString = mImageUriEditText.getText().toString().trim();
+        String imageUriString = mImageUri.toString();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
 
@@ -150,29 +184,29 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (!TextUtils.isEmpty(priceString)) price = Integer.parseInt(priceString);
         values.put(ProductEntry.COL_PRODUCT_PRICE, price);
 
-        if (mCurrItemUri==null){
+        if (mCurrItemUri == null) {
             Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
-            if (newUri==null){
+            if (newUri == null) {
                 Toast.makeText(this, "Error saving product", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Product saved with row id: " +newUri.toString(),
+                Toast.makeText(this, "Product saved with row id: " + newUri.toString(),
                         Toast.LENGTH_SHORT).show();
             }
         } else {
             int rowsAffected = getContentResolver().update(mCurrItemUri, values, null, null);
-            if (rowsAffected==0) {
+            if (rowsAffected == 0) {
                 Toast.makeText(this, "Error saving product", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Product updated",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Product updated", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void deleteProduct(){
-        if (mCurrItemUri !=null){
+    private void deleteProduct() {
+        if (mCurrItemUri != null) {
             int rowsDeleted = getContentResolver().delete(mCurrItemUri, null, null);
 
-            if (rowsDeleted==0){
+            if (rowsDeleted == 0) {
                 Toast.makeText(this, "Error deleting product", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Product deleted", Toast.LENGTH_SHORT).show();
@@ -180,4 +214,5 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
         finish();
     }
+
 }

@@ -18,6 +18,11 @@
         android:layout_height="wrap_content"
         android:hint="Product Description"
         android:inputType="textCapWords"/>
+    <Button
+        android:id="@+id/edit_button_select_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="select image"/>
     <EditText
         android:id="@+id/edit_product_image_uri"
         android:layout_width="wrap_content"
