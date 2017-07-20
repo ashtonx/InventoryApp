@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:padding="16dp"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context=".EditorActivity">
+    <EditText
+        android:id="@+id/edit_product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Product Name"
+        android:inputType="textCapWords"/>
+    <EditText
+        android:id="@+id/edit_product_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Product Description"
+        android:inputType="textCapWords"/>
+    <EditText
+        android:id="@+id/edit_product_image_uri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Product ImageUri"
+        android:inputType="textCapWords"/>
+    <EditText
+        android:id="@+id/edit_product_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Product Quantity"
+        android:inputType="textCapWords"/>
+    <EditText
+        android:id="@+id/edit_product_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Product Price"
+        android:inputType="textCapWords"/>
+</LinearLayout>
