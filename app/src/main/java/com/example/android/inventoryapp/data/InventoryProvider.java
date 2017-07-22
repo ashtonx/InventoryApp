@@ -46,7 +46,7 @@ public class InventoryProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
         Cursor cursor;
 
-        int match = sUriMatcher.match(uri);
+        final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCTS:
                 cursor = database.query(ProductEntry.TABLE_NAME,
@@ -60,7 +60,6 @@ public class InventoryProvider extends ContentProvider {
             case PRODUCT_ID:
                 selection = ProductEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-
                 cursor = database.query(ProductEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -70,10 +69,8 @@ public class InventoryProvider extends ContentProvider {
                         sortOrder);
                 break;
             default:
-                //todo check if string.xml necessary
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
-
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -88,7 +85,7 @@ public class InventoryProvider extends ContentProvider {
             case PRODUCT_ID:
                 return ProductEntry.CONTENT_ITEM_TYPE;
             default:
-                throw new IllegalStateException("Unknown URI " + uri + " with march " + match);
+                throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
         }
     }
 
@@ -148,17 +145,19 @@ public class InventoryProvider extends ContentProvider {
 
         String name = values.getAsString(ProductEntry.COL_PRODUCT_NAME);
         if (name == null) throw new IllegalArgumentException("Product requires name");
+
         Integer quantity = values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY);
         if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("No support for negative quantity");
         }
+
         Integer price = values.getAsInteger(ProductEntry.COL_PRODUCT_PRICE);
         if (price != null && price < 0) {
             throw new IllegalArgumentException("No support for negative price?");
         }
 
         long id = database.insert(ProductEntry.TABLE_NAME, null, values);
-        if (id == -1){
+        if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
@@ -187,12 +186,11 @@ public class InventoryProvider extends ContentProvider {
         if (values.containsKey(ProductEntry.COL_PRODUCT_PRICE)) {
             Integer price = values.getAsInteger(ProductEntry.COL_PRODUCT_PRICE);
             if (price != null && price < 0) {
-                throw new IllegalArgumentException("No support for negative price?");
+                throw new IllegalArgumentException("No support for negative price");
             }
         }
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
-
         int rowsUpdated = database.update(ProductEntry.TABLE_NAME, values, selection,
                 selectionArgs);
         if (rowsUpdated != 0) getContext().getContentResolver().notifyChange(uri, null);

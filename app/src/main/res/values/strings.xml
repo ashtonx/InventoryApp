@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Inventory App</string>
+    <!--LOG-->
+    <!--EDITOR STRINGS-->
+    <string name="editor_title_product_add">Add Product</string>
+    <string name="editor_title_product_edit">Edit Product</string>
+    <string name="editor_toast_product_save_error">Error Saving Product</string>
+    <string name="editor_toast_product_save_success">Product Saved with row id: </string>
+    <string name="editor_toast_product_update_success">Product Updated</string>
+    <string name="editor_toast_product_delete_error">Error Deleting Product</string>
+    <string name="editor_toast_product_delete_success">Product Deleted</string>
+    <string name="editor_data_check_no_name">Product requires name</string>
+    <string name="editor_data_check_quantity">
+        Wrong Quantity Format, should be an Integer Number like 42</string>
+    <string name="editor_data_check_price">
+        Wrong Price Format, should be a Floating Point Number like 13.99</string>
+    <string name="editor_data_check_negative_quantity">No support for negative quantity</string>
+    <string name="editor_data_check_negative_price">No support for negative price</string>
+
 </resources>

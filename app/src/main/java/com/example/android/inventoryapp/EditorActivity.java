@@ -9,7 +9,9 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -24,7 +26,7 @@ import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int EXISTING_INVENTORY_LOADER_ID = 1;
-    private static final int SELECT_FILE = 1;
+    private static final int GET_IMAGE = 0;
 
     private EditText mNameEditText;
     private EditText mDescriptionEditText;
@@ -34,7 +36,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private Uri mCurrItemUri;
     private Uri mImageUri;
 
-    private boolean mProductHasChanged = false;
+    boolean mProductHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -51,9 +53,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mCurrItemUri = intent.getData();
 
         if (mCurrItemUri == null) {
-            setTitle("Add a product");
+            setTitle(getString(R.string.editor_title_product_add));
             invalidateOptionsMenu();
-        } else setTitle("Edit product");
+        } else setTitle(getString(R.string.editor_title_product_edit));
 
         //todo change later
         mNameEditText = (EditText) findViewById(R.id.edit_product_name);
@@ -64,12 +66,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mImageUriButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select File"), SELECT_FILE);
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(intent, GET_IMAGE);
             }
         });
+        mImageUriButton.setOnTouchListener(mTouchListener);
         mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
@@ -111,10 +114,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-//        mNameEditText.setText("");
-//        mDescriptionEditText.setText("");
-//        mQuantityEditText.setText("0");
-//        mPriceEditText.setText("0");
     }
 
     @Override
@@ -137,13 +136,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                saveProduct();
-                finish();
+                if (saveProduct()) finish();
                 return true;
             case R.id.action_delete:
                 deleteProduct();
                 return true;
             case android.R.id.home:
+                if (!mProductHasChanged) {
+                    NavUtils.navigateUpFromSameTask(this);
+                    return true;
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -158,61 +160,168 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SELECT_FILE && resultCode == Activity.RESULT_OK) {
-            if (data != null)
-                mImageUri = data.getData();
+        if (requestCode == GET_IMAGE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                Uri selectedImageUri = data.getData();
+                mImageUri = Uri.parse(getRealPathFromURI(selectedImageUri));
+            }
         }
     }
 
 
     //helpers
-    private void saveProduct() {
+    private boolean saveProduct() {
         String nameString = mNameEditText.getText().toString().trim();
         String descriptionString = mDescriptionEditText.getText().toString().trim();
-        String imageUriString = mImageUri.toString();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
 
-        ContentValues values = new ContentValues();
-        values.put(ProductEntry.COL_PRODUCT_NAME, nameString);
-        values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, descriptionString);
-        values.put(ProductEntry.COL_PRODUCT_IMG_URI, imageUriString);
-        int quantity = 0;
-        if (!TextUtils.isEmpty(quantityString)) quantity = Integer.parseInt(quantityString);
-        values.put(ProductEntry.COL_PRODUCT_QUANTITY, quantity);
-        int price = 0;
-        if (!TextUtils.isEmpty(priceString)) price = Integer.parseInt(priceString);
-        values.put(ProductEntry.COL_PRODUCT_PRICE, price);
+        if (mCurrItemUri == null && TextUtils.isEmpty(nameString)
+                && TextUtils.isEmpty(descriptionString) && mImageUri == null
+                && TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString)) {
+            return false;
+        }
 
-        if (mCurrItemUri == null) {
-            Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
-            if (newUri == null) {
-                Toast.makeText(this, "Error saving product", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Product saved with row id: " + newUri.toString(),
-                        Toast.LENGTH_SHORT).show();
+        Integer quantity = null;
+        if (!TextUtils.isEmpty(quantityString)) {
+            quantity = parseQuantity(quantityString);
+            if (quantity == null) return false;
+        }
+        Integer price = null;
+        if (!TextUtils.isEmpty(priceString)) {
+            price = parsePrice(priceString);
+            if (price == null) return false;
+        }
+
+        boolean savedStatus = false;
+        if (checkInput(nameString, quantity, price)) {
+            ContentValues values = new ContentValues();
+            if (!TextUtils.isEmpty(nameString)) {
+                values.put(ProductEntry.COL_PRODUCT_NAME, nameString);
             }
-        } else {
-            int rowsAffected = getContentResolver().update(mCurrItemUri, values, null, null);
-            if (rowsAffected == 0) {
-                Toast.makeText(this, "Error saving product", Toast.LENGTH_SHORT).show();
+            if (!TextUtils.isEmpty(descriptionString)) {
+                values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, descriptionString);
+            }
+            if (mImageUri!=null){
+                values.put(ProductEntry.COL_PRODUCT_IMG_URI, mImageUri.toString());
+            }
+            if (quantity != null) values.put(ProductEntry.COL_PRODUCT_QUANTITY, quantity);
+            if (price != null) values.put(ProductEntry.COL_PRODUCT_PRICE, price);
+
+            if (mCurrItemUri == null) {
+                Uri tempUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
+                savedStatus = checkIfSaved(tempUri);
             } else {
-                Toast.makeText(this, "Product updated", Toast.LENGTH_SHORT).show();
+                int rowsAffected = getContentResolver().update(mCurrItemUri, values, null, null);
+                savedStatus = checkIfUpdated(rowsAffected);
             }
         }
+        return savedStatus;
     }
 
     private void deleteProduct() {
         if (mCurrItemUri != null) {
             int rowsDeleted = getContentResolver().delete(mCurrItemUri, null, null);
-
             if (rowsDeleted == 0) {
-                Toast.makeText(this, "Error deleting product", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.editor_toast_product_delete_error),
+                        Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Product deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.editor_toast_product_delete_success),
+                        Toast.LENGTH_SHORT).show();
             }
         }
         finish();
     }
 
+    private String getRealPathFromURI(Uri contentUri) {
+        String resource = null;
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            resource = "file://" + cursor.getString(columnIndex);
+        }
+        cursor.close();
+        return resource;
+    }
+
+    private Integer parseQuantity(String quantityString) {
+        boolean parsed = false;
+        Integer quantity = null;
+        try {
+            quantity = Integer.parseInt(quantityString);
+            parsed = true;
+        } catch (NumberFormatException e) {
+            return null;
+        } finally {
+            if (!parsed) {
+                Toast.makeText(this, getString(R.string.editor_data_check_quantity),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+        return quantity;
+    }
+
+    private Integer parsePrice(String priceString) {
+        boolean parsed = false;
+        Integer price = null;
+        Float temp;
+        try {
+            temp = Float.parseFloat(priceString);
+            parsed = true;
+        } catch (NumberFormatException e) {
+            return null;
+        } finally {
+            if (!parsed) {
+                Toast.makeText(this, getString(R.string.editor_data_check_price),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+        price = (int) (temp * 100);
+        return price;
+    }
+
+    //checks
+    private boolean checkInput(String name, Integer quantity, Integer price) {
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(this, getString(R.string.editor_data_check_no_name),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (quantity != null && quantity < 0) {
+            Toast.makeText(this, getString(R.string.editor_data_check_negative_quantity),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (price != null && price < 0) {
+            Toast.makeText(this, getString(R.string.editor_data_check_negative_price),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIfSaved(Uri uri) {
+        if (uri == null) {
+            Toast.makeText(this, getString(R.string.editor_toast_product_save_error),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            Toast.makeText(this, getString(R.string.editor_toast_product_save_success)
+                    + uri.toString(), Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
+
+    private boolean checkIfUpdated(int rowsAffected) {
+        if (rowsAffected == 0) {
+            Toast.makeText(this, getString(R.string.editor_toast_product_save_error),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            Toast.makeText(this, getString(R.string.editor_toast_product_update_success),
+                    Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
 }

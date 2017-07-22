@@ -19,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
-import com.example.android.inventoryapp.data.InventoryCursorAdapter;
 
 import static com.example.android.inventoryapp.data.InventoryProvider.LOG_TAG;
 
@@ -40,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(intent);
             }
         });
-        mCursorAdapter = new InventoryCursorAdapter(this, null);
 
+        mCursorAdapter = new InventoryCursorAdapter(this, null);
         ListView inventoryListView = (ListView) findViewById(R.id.list_view_inventory);
         View emptyView = findViewById(R.id.empty_view);
         inventoryListView.setAdapter(mCursorAdapter);
@@ -63,15 +62,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         //todo change after fixing ui
         String[] projection = {
-            ProductEntry._ID,
-            ProductEntry.COL_PRODUCT_NAME,
-            ProductEntry.COL_PRODUCT_DESCRIPTION,
-            ProductEntry.COL_PRODUCT_IMG_URI,
-            ProductEntry.COL_PRODUCT_QUANTITY,
-            ProductEntry.COL_PRODUCT_PRICE
+                ProductEntry._ID,
+                ProductEntry.COL_PRODUCT_NAME,
+                ProductEntry.COL_PRODUCT_DESCRIPTION,
+                ProductEntry.COL_PRODUCT_IMG_URI,
+                ProductEntry.COL_PRODUCT_QUANTITY,
+                ProductEntry.COL_PRODUCT_PRICE
         };
 
-        return new CursorLoader(this, ProductEntry.CONTENT_URI, projection,null,null,null);
+        return new CursorLoader(this, ProductEntry.CONTENT_URI, projection, null, null, null);
     }
 
     @Override
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_insert_dummy_data:
                 insertDummyProduct();
                 return true;
@@ -102,15 +101,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
         return super.onOptionsItemSelected(item);
     }
+
     //Helpers
     private void insertDummyProduct() {
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COL_PRODUCT_NAME, "dummy NAME");
-        values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, "dummy DESCRIPTION");
-        values.put(ProductEntry.COL_PRODUCT_IMG_URI, "DUMMY URI");
+        values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, "dummy DESCRIPTION);");
+        values.put(ProductEntry.COL_PRODUCT_IMG_URI, "BREAKING URI TEST");
         values.put(ProductEntry.COL_PRODUCT_PRICE, 13);
         values.put(ProductEntry.COL_PRODUCT_QUANTITY, 42);
-        Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI,values);
+        Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
     }
 
     private void deleteAllEntries() {
