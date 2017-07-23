@@ -1,32 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/list_item_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:id="@+id/list_item_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+              style="@style/list_item_container"
+              android:layout_weight="10">
+
     <ImageView
         android:id="@+id/list_item_image_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-    <TextView
-        android:id="@+id/list_item_image_uri"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:id="@+id/list_item_quantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:id="@+id/list_item_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        style="@style/list_item_thumbnail"
+        android:src="@drawable/ic_image_black"/>
 
+    <LinearLayout
+        style="@style/list_item_content_container">
+
+        <TextView
+            android:id="@+id/list_item_name"
+            style="@style/product_name"/>
+
+        <TextView
+            android:id="@+id/list_item_description"
+            style="@style/product_description"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/list_item_stock_container">
+
+        <TextView
+            android:id="@+id/list_item_quantity"
+            style="@style/product_stock_and_price"/>
+
+        <TextView
+            android:id="@+id/list_item_price"
+            style="@style/product_stock_and_price"/>
+
+        <Button
+            android:id="@+id/list_item_button_sell"
+            style="@style/list_item_button_style"
+            android:text="@string/list_item_sell_button"/>
+    </LinearLayout>
 </LinearLayout>

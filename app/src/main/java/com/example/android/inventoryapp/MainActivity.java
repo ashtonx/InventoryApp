@@ -4,12 +4,14 @@ import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -49,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-                Uri currProdcutUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
-                intent.setData(currProdcutUri);
+                Uri currProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
+                intent.setData(currProductUri);
                 startActivity(intent);
             }
         });
@@ -60,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        //todo change after fixing ui
         String[] projection = {
                 ProductEntry._ID,
                 ProductEntry.COL_PRODUCT_NAME,
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 insertDummyProduct();
                 return true;
             case R.id.action_delete_all_entries:
-                deleteAllEntries();
+                showDeleteConfirmationDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COL_PRODUCT_NAME, "dummy NAME");
         values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, "dummy DESCRIPTION);");
-        values.put(ProductEntry.COL_PRODUCT_IMG_URI, "BREAKING URI TEST");
+        values.put(ProductEntry.COL_PRODUCT_IMG_URI, "");
         values.put(ProductEntry.COL_PRODUCT_PRICE, 13);
         values.put(ProductEntry.COL_PRODUCT_QUANTITY, 42);
         Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
@@ -116,5 +117,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void deleteAllEntries() {
         int rowsDeleted = getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
         Log.v(LOG_TAG, rowsDeleted + " rows deleted from database");
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_delete_all_entries_msg);
+        builder.setPositiveButton(R.string.dialog_delete_confirm,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        deleteAllEntries();
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_delete_cancel,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                }
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

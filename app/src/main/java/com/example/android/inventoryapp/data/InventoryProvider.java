@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
@@ -142,20 +143,15 @@ public class InventoryProvider extends ContentProvider {
     //helpers
     private Uri insertProduct(Uri uri, ContentValues values) {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
-
-        String name = values.getAsString(ProductEntry.COL_PRODUCT_NAME);
-        if (name == null) throw new IllegalArgumentException("Product requires name");
-
-        Integer quantity = values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY);
-        if (quantity != null && quantity < 0) {
+        if (TextUtils.isEmpty(values.getAsString(ProductEntry.COL_PRODUCT_NAME))) {
+            throw new IllegalArgumentException("Product requires name");
+        }
+        if (values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY) < 0) {
             throw new IllegalArgumentException("No support for negative quantity");
         }
-
-        Integer price = values.getAsInteger(ProductEntry.COL_PRODUCT_PRICE);
-        if (price != null && price < 0) {
+        if (values.getAsInteger(ProductEntry.COL_PRODUCT_PRICE) < 0) {
             throw new IllegalArgumentException("No support for negative price?");
         }
-
         long id = database.insert(ProductEntry.TABLE_NAME, null, values);
         if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
@@ -170,23 +166,21 @@ public class InventoryProvider extends ContentProvider {
     private int updateProduct(Uri uri, ContentValues values, String selection,
                               String[] selectionArgs) {
         if (values.size() == 0) return 0;
-
-        if (values.containsKey(ProductEntry.COL_PRODUCT_NAME)) {
-            String name = values.getAsString(ProductEntry.COL_PRODUCT_NAME);
-            if (name == null) throw new IllegalArgumentException("Product requires a name");
+        if (values.containsKey(ProductEntry.COL_PRODUCT_NAME)){
+            if (TextUtils.isEmpty(values.getAsString(ProductEntry.COL_PRODUCT_NAME))) {
+                throw new IllegalArgumentException("Product requires name");
+            }
         }
 
         if (values.containsKey(ProductEntry.COL_PRODUCT_QUANTITY)) {
-            Integer quantity = values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY);
-            if (quantity != null && quantity < 0) {
+            if (values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY) < 0)  {
                 throw new IllegalArgumentException("No support for negative quantity");
             }
         }
 
         if (values.containsKey(ProductEntry.COL_PRODUCT_PRICE)) {
-            Integer price = values.getAsInteger(ProductEntry.COL_PRODUCT_PRICE);
-            if (price != null && price < 0) {
-                throw new IllegalArgumentException("No support for negative price");
+            if (values.getAsInteger(ProductEntry.COL_PRODUCT_PRICE) < 0) {
+                throw new IllegalArgumentException("No support for negative price?");
             }
         }
 

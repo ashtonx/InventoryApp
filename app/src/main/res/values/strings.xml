@@ -1,7 +1,27 @@
 <resources>
     <string name="app_name">Inventory App</string>
-    <!--LOG-->
+    <string name="sell_product_success">Product Sale Success</string>
+    <string name="sell_product_failed">Something went wrong, Product Sale NOT Saved</string>
+    <string name="sell_button_no_stock">Out of Stock</string>
+    <string name="mail_intent_subject">Order:</string>
+
+    <!--LIST ITEM STRINGS-->
+    <string name="list_item_quantity">In stock:</string>
+    <string name="list_item_price">Price:</string>
+    <string name="list_item_sell_button">SELL</string>
+
     <!--EDITOR STRINGS-->
+    <!--<string name="editor_activity_title">Edit Product</string>-->
+    <string name="editor_activity_select_image">Select Image</string>
+    <string name="editor_activity_product_name">Product Name</string>
+    <string name="editor_activity_product_description">Product Description</string>
+    <string name="editor_activity_quantity_in_stock">Quantity in stock</string>
+    <string name="editor_activity_decrease_button">Decrease</string>
+    <string name="editor_activity_product_quantity">Product Quantity</string>
+    <string name="editor_activity_increase_button">Increase</string>
+    <string name="editor_activity_product_price">Product Price</string>
+    <string name="editor_activity_order_more_button">Order more..</string>
+
     <string name="editor_title_product_add">Add Product</string>
     <string name="editor_title_product_edit">Edit Product</string>
     <string name="editor_toast_product_save_error">Error Saving Product</string>
@@ -10,11 +30,30 @@
     <string name="editor_toast_product_delete_error">Error Deleting Product</string>
     <string name="editor_toast_product_delete_success">Product Deleted</string>
     <string name="editor_data_check_no_name">Product requires name</string>
-    <string name="editor_data_check_quantity">
-        Wrong Quantity Format, should be an Integer Number like 42</string>
-    <string name="editor_data_check_price">
-        Wrong Price Format, should be a Floating Point Number like 13.99</string>
+    <!--<string name="editor_data_check_quantity">-->
+        <!--Wrong Quantity Format, should be an Integer Number like 42</string>-->
+    <!--<string name="editor_data_check_price">-->
+        <!--Wrong Price Format, should be a Floating Point Number like 13.99</string>-->
     <string name="editor_data_check_negative_quantity">No support for negative quantity</string>
     <string name="editor_data_check_negative_price">No support for negative price</string>
+    <!--<string name="editor_order_no_product_name">No product to order. Insert At least a name</string>-->
 
+    <!--DIALOGS-->
+    <string name="dialog_delete_all_entries_msg">Do you want to DELETE ALL Products?</string>
+    <string name="dialog_delete_entry_msg">Delete this product ?</string>
+    <string name="dialog_delete_confirm">Delete</string>
+    <string name="dialog_delete_cancel">Cancel</string>
+
+    <string name="dialog_discard_msg">Discard your changes and quit editing?</string>
+    <string name="dialog_discard_confirm">Discard</string>
+    <string name="dialog_discard_cancel">Keep Editing</string>
+
+    <!--MENU-->
+    <string name="menu_save">Save</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_insert_dummy_data">Insert Dummy Data</string>
+    <string name="menu_delete_all_entries">Delete All Entries</string>
+    <string name="empty_view_msg">There is no entries at the moment.
+        Please use menu to insert Dummy data or add a new item using Button at the bottom right
+    </string>
 </resources>

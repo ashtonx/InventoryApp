@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -7,5 +6,172 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="fit_parent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="fit_width">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="wrap_content">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="fit_horizontal_weight">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+    </style>
+
+    <!--MAIN ACTIVITY-->
+    <style name="empty_view_container" parent="wrap_content">
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+    <style name="empty_view_icon">
+        <item name="android:layout_width">@dimen/empty_view_icon</item>
+        <item name="android:layout_height">@dimen/empty_view_icon</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_margin">@dimen/padding_large</item>
+    </style>
+    <style name="empty_view_text" parent="wrap_content">
+        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:textAppearance">?android:textAppearanceLarge</item>
+        <item name="android:layout_below">@id/empty_view_icon</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!--LIST ITEM STYLES-->
+    <style name="list_item_container" parent="fit_width">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="list_item_content_container" parent="fit_horizontal_weight">
+        <item name="android:layout_weight">8</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_margin">@dimen/padding</item>
+    </style>
+
+    <style name="list_item_stock_container" parent="fit_horizontal_weight">
+        <item name="android:layout_weight">2</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_margin">@dimen/padding</item>
+    </style>
+
+    <style name="list_item_thumbnail">
+        <item name="android:layout_width">@dimen/thumbnail_size</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="list_item_text_style" parent="fit_width">
+        <item name="android:padding">@dimen/padding</item>
+    </style>
+
+    <style name="product_name" parent="list_item_text_style">
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="product_description" parent="list_item_text_style">
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:textColor">@color/colorTextLight</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">4</item>
+    </style>
+
+    <style name="product_stock_and_price" parent="list_item_text_style">
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:textColor">@color/colorTextDark</item>
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="list_item_button_style" parent="fit_width">
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <!--EDITOR STYLES-->
+    <style name="editor_main_container" parent="fit_parent">
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="editor_container" parent="fit_width">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical|end</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="editor_label" parent="fit_horizontal_weight">
+        <item name="android:padding">@dimen/padding</item>
+        <item name="android:layout_weight">3</item>
+    </style>
+
+    <style name="editor_input" parent="fit_horizontal_weight">
+        <item name="android:padding">@dimen/padding</item>
+        <item name="android:layout_weight">7</item>
+    </style>
+    <!--EDITOR: GENERIC-->
+    <style name="editor_label_text" parent="editor_label">
+        <item name="android:padding">@dimen/padding</item>
+        <item name="android:textAppearance">?android:textAppearanceLarge</item>
+    </style>
+
+    <style name="editor_input_text" parent="editor_input">
+        <item name="android:inputType">textCapWords</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <!--EDITOR: IMAGE-->
+    <style name="editor_thumbnail" parent="fit_horizontal_weight">
+        <item name="android:padding">@dimen/padding</item>
+        <item name="android:maxWidth">@dimen/thumbnail_size</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:layout_weight">5</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="select_image_button" parent="wrap_content">
+        <item name="android:layout_weight">5</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!--EDITOR: QUANTITY-->
+    <style name="editor_container_quantity" parent="editor_input">
+        <item name="android:layout_weight">8</item>
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="editor_input_quantity" parent="wrap_content">
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="editor_input_quantity_text" parent="editor_input_quantity">
+        <item name="android:ems">3</item>
+        <item name="android:gravity">center</item>
+        <item name="android:inputType">number</item>
+    </style>
+    <!--EDITOR: PRICE-->
+    <style name="editor_input_price" parent="editor_input_text">
+        <item name="android:ems">5</item>
+        <item name="android:inputType">numberDecimal</item>
+    </style>
+    <!--EDITOR ORDER MORE-->
+    <style name="editor_order_more_button" parent="wrap_content">
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
 
 </resources>

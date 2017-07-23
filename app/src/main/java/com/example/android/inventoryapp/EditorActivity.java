@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -20,9 +24,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
+
+import static java.lang.Integer.parseInt;
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int EXISTING_INVENTORY_LOADER_ID = 1;
@@ -30,11 +37,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private EditText mNameEditText;
     private EditText mDescriptionEditText;
+    private ImageView mThumbnailImageView;
     private EditText mQuantityEditText;
     private EditText mPriceEditText;
 
+    private String mImagePath;
     private Uri mCurrItemUri;
-    private Uri mImageUri;
 
     boolean mProductHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -57,26 +65,69 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             invalidateOptionsMenu();
         } else setTitle(getString(R.string.editor_title_product_edit));
 
-        //todo change later
         mNameEditText = (EditText) findViewById(R.id.edit_product_name);
         mNameEditText.setOnTouchListener(mTouchListener);
         mDescriptionEditText = (EditText) findViewById(R.id.edit_product_description);
         mDescriptionEditText.setOnTouchListener(mTouchListener);
-        Button mImageUriButton = (Button) findViewById(R.id.edit_button_select_image);
-        mImageUriButton.setOnClickListener(new View.OnClickListener() {
+        mThumbnailImageView = (ImageView) findViewById(R.id.edit_image_preview);
+        mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
+        mQuantityEditText.setOnTouchListener(mTouchListener);
+        mQuantityEditText.setText(String.valueOf(0));
+        mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
+        mPriceEditText.setOnTouchListener(mTouchListener);
+
+        Button imageUriButton = (Button) findViewById(R.id.edit_button_select_image);
+        imageUriButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
                 startActivityForResult(intent, GET_IMAGE);
             }
         });
-        mImageUriButton.setOnTouchListener(mTouchListener);
-        mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
-        mQuantityEditText.setOnTouchListener(mTouchListener);
-        mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
-        mPriceEditText.setOnTouchListener(mTouchListener);
+        imageUriButton.setOnTouchListener(mTouchListener);
+
+        Button increaseQuantityButton = (Button) findViewById(R.id.edit_quantity_increase);
+        increaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int tmp = 0;
+                try {
+                    tmp = Integer.parseInt(mQuantityEditText.getText().toString().trim());
+                } catch (NumberFormatException e) {
+                }
+                mQuantityEditText.setText(String.valueOf(++tmp));
+            }
+        });
+
+        Button decreaseQuantityButton = (Button) findViewById(R.id.edit_quantity_decrease);
+        decreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int tmp = 0;
+                try {
+                    tmp = parseInt(mQuantityEditText.getText().toString().trim());
+                } catch (NumberFormatException e) {
+                }
+                if (tmp > 0) --tmp;
+                mQuantityEditText.setText(String.valueOf(tmp));
+            }
+        });
+
+        Button orderMoreButton = (Button) findViewById(R.id.edit_order_more);
+        orderMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String nameString = mNameEditText.getText().toString().trim();
+                Intent mailIntent = new Intent(Intent.ACTION_SEND);
+                mailIntent.setType("*/*");
+                mailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.mail_intent_subject)
+                        + nameString);
+                if (mailIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(mailIntent);
+                }
+            }
+        });
 
         if (mCurrItemUri != null) {
             getLoaderManager().initLoader(EXISTING_INVENTORY_LOADER_ID, null, this);
@@ -98,17 +149,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.moveToFirst()) {
-            int nameColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_NAME);
-            int descriptionColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_DESCRIPTION);
-            int imageUriColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_IMG_URI);
-            int quantityColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_QUANTITY);
-            int priceColumnIndex = data.getColumnIndex(ProductEntry.COL_PRODUCT_PRICE);
+            int nameColIdx = data.getColumnIndex(ProductEntry.COL_PRODUCT_NAME);
+            mNameEditText.setText(data.getString(nameColIdx));
 
-            mNameEditText.setText(data.getString(nameColumnIndex));
-            mDescriptionEditText.setText(data.getString(descriptionColumnIndex));
-            mImageUri = Uri.parse(data.getString(imageUriColumnIndex));
-            mQuantityEditText.setText(Integer.toString(data.getInt(quantityColumnIndex)));
-            mPriceEditText.setText(Integer.toString(data.getInt(priceColumnIndex)));
+            int descriptionColIdx = data.getColumnIndex(ProductEntry.COL_PRODUCT_DESCRIPTION);
+            mDescriptionEditText.setText(data.getString(descriptionColIdx));
+
+            int imageUriColIdx = data.getColumnIndex(ProductEntry.COL_PRODUCT_IMG_URI);
+            mImagePath = data.getString(imageUriColIdx);
+
+            int quantityColIdx = data.getColumnIndex(ProductEntry.COL_PRODUCT_QUANTITY);
+            mQuantityEditText.setText(String.valueOf(data.getInt(quantityColIdx)));
+
+            int priceColIdx = data.getColumnIndex(ProductEntry.COL_PRODUCT_PRICE);
+            float price = (float) data.getInt(priceColIdx);
+            if (price > 0) price = price / 100;
+            mPriceEditText.setText(String.valueOf(price));
+
+            refreshThumbnail();
+
         }
     }
 
@@ -139,23 +198,39 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 if (saveProduct()) finish();
                 return true;
             case R.id.action_delete:
-                deleteProduct();
+                showDeleteConfirmationDialog();
                 return true;
             case android.R.id.home:
                 if (!mProductHasChanged) {
                     NavUtils.navigateUpFromSameTask(this);
                     return true;
                 }
+                DialogInterface.OnClickListener discardButtonClickListener = new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                    }
+                };
+                showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public void onBackPressed() {
-//
-//        super.onBackPressed();
-//    }
+    @Override
+    public void onBackPressed() {
+        if (!mProductHasChanged) {
+            super.onBackPressed();
+            return;
+        }
+        OnClickListener discardButtonClickListener = new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        };
+        showUnsavedChangesDialog(discardButtonClickListener);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -163,60 +238,90 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (requestCode == GET_IMAGE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 Uri selectedImageUri = data.getData();
-                mImageUri = Uri.parse(getRealPathFromURI(selectedImageUri));
+                mImagePath = gerRealPathFromUri(selectedImageUri);
+                refreshThumbnail();
             }
         }
     }
 
 
-    //helpers
+    //HELPERS
     private boolean saveProduct() {
         String nameString = mNameEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(nameString)) {
+            Toast.makeText(this, getString(R.string.editor_data_check_no_name),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         String descriptionString = mDescriptionEditText.getText().toString().trim();
+
         String quantityString = mQuantityEditText.getText().toString().trim();
+        int quantity = 0;
+        if (!TextUtils.isEmpty(quantityString)) {
+            try {
+                quantity = parseInt(quantityString);
+            } catch (NumberFormatException e) {}
+            if (quantity < 0) {
+                Toast.makeText(this, getString(R.string.editor_data_check_negative_quantity),
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+
         String priceString = mPriceEditText.getText().toString().trim();
+        priceString.replaceAll("D+","");
+
+        int price = 0;
+        if (!TextUtils.isEmpty(priceString)) {
+            float tmp = 0;
+            try {
+                tmp = Float.parseFloat(priceString);
+            } catch (NumberFormatException e) {}
+            if (tmp > 0) price = (int) (tmp * 100);
+            else if (tmp < 0) {
+                Toast.makeText(this, getString(R.string.editor_data_check_negative_price),
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
 
         if (mCurrItemUri == null && TextUtils.isEmpty(nameString)
-                && TextUtils.isEmpty(descriptionString) && mImageUri == null
+                && TextUtils.isEmpty(descriptionString) && mImagePath == null
                 && TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString)) {
             return false;
         }
 
-        Integer quantity = null;
-        if (!TextUtils.isEmpty(quantityString)) {
-            quantity = parseQuantity(quantityString);
-            if (quantity == null) return false;
-        }
-        Integer price = null;
-        if (!TextUtils.isEmpty(priceString)) {
-            price = parsePrice(priceString);
-            if (price == null) return false;
-        }
+        ContentValues values = new ContentValues();
+        values.put(ProductEntry.COL_PRODUCT_NAME, nameString);
+        values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, descriptionString);
+        values.put(ProductEntry.COL_PRODUCT_IMG_URI, mImagePath);
+        values.put(ProductEntry.COL_PRODUCT_QUANTITY, quantity);
+        values.put(ProductEntry.COL_PRODUCT_PRICE, price);
 
-        boolean savedStatus = false;
-        if (checkInput(nameString, quantity, price)) {
-            ContentValues values = new ContentValues();
-            if (!TextUtils.isEmpty(nameString)) {
-                values.put(ProductEntry.COL_PRODUCT_NAME, nameString);
-            }
-            if (!TextUtils.isEmpty(descriptionString)) {
-                values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, descriptionString);
-            }
-            if (mImageUri!=null){
-                values.put(ProductEntry.COL_PRODUCT_IMG_URI, mImageUri.toString());
-            }
-            if (quantity != null) values.put(ProductEntry.COL_PRODUCT_QUANTITY, quantity);
-            if (price != null) values.put(ProductEntry.COL_PRODUCT_PRICE, price);
-
-            if (mCurrItemUri == null) {
-                Uri tempUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
-                savedStatus = checkIfSaved(tempUri);
+        if (mCurrItemUri == null) {
+            Uri uri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
+            if (uri == null) {
+                Toast.makeText(this, getString(R.string.editor_toast_product_save_error),
+                        Toast.LENGTH_SHORT).show();
+                return false;
             } else {
-                int rowsAffected = getContentResolver().update(mCurrItemUri, values, null, null);
-                savedStatus = checkIfUpdated(rowsAffected);
+                Toast.makeText(this, getString(R.string.editor_toast_product_save_success)
+                        + uri.toString(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        } else {
+            int rowsAffected = getContentResolver().update(mCurrItemUri, values, null, null);
+            if (rowsAffected == 0) {
+                Toast.makeText(this, getString(R.string.editor_toast_product_save_error),
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            } else {
+                Toast.makeText(this, getString(R.string.editor_toast_product_update_success),
+                        Toast.LENGTH_SHORT).show();
+                return true;
             }
         }
-        return savedStatus;
     }
 
     private void deleteProduct() {
@@ -233,95 +338,58 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         finish();
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
+    private String gerRealPathFromUri(Uri contentUri) {
         String resource = null;
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
         if (cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            resource = "file://" + cursor.getString(columnIndex);
+            int colIdx = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            resource = "file://" + cursor.getString(colIdx);
         }
         cursor.close();
         return resource;
     }
 
-    private Integer parseQuantity(String quantityString) {
-        boolean parsed = false;
-        Integer quantity = null;
-        try {
-            quantity = Integer.parseInt(quantityString);
-            parsed = true;
-        } catch (NumberFormatException e) {
-            return null;
-        } finally {
-            if (!parsed) {
-                Toast.makeText(this, getString(R.string.editor_data_check_quantity),
-                        Toast.LENGTH_SHORT).show();
+    private void refreshThumbnail(){
+        if (!TextUtils.isEmpty(mImagePath)) {
+            Bitmap newImage=Utils.getBitmap(this, Uri.parse(mImagePath) ,Utils.DEFAULT_BITMAP_SCALE);
+            mThumbnailImageView.setImageBitmap(newImage);
+        }
+    }
+
+    //DIALOGS
+    private void showDeleteConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_delete_entry_msg);
+        builder.setPositiveButton(R.string.dialog_delete_confirm, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteProduct();
             }
-        }
-        return quantity;
-    }
-
-    private Integer parsePrice(String priceString) {
-        boolean parsed = false;
-        Integer price = null;
-        Float temp;
-        try {
-            temp = Float.parseFloat(priceString);
-            parsed = true;
-        } catch (NumberFormatException e) {
-            return null;
-        } finally {
-            if (!parsed) {
-                Toast.makeText(this, getString(R.string.editor_data_check_price),
-                        Toast.LENGTH_SHORT).show();
+        });
+        builder.setNegativeButton(R.string.dialog_delete_cancel, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (dialog != null) dialog.dismiss();
             }
-        }
-        price = (int) (temp * 100);
-        return price;
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
-    //checks
-    private boolean checkInput(String name, Integer quantity, Integer price) {
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, getString(R.string.editor_data_check_no_name),
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (quantity != null && quantity < 0) {
-            Toast.makeText(this, getString(R.string.editor_data_check_negative_quantity),
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (price != null && price < 0) {
-            Toast.makeText(this, getString(R.string.editor_data_check_negative_price),
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
-    }
+    private void showUnsavedChangesDialog(final OnClickListener discardButtonClickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_discard_msg);
+        builder.setPositiveButton(R.string.dialog_discard_confirm, discardButtonClickListener);
+        builder.setNegativeButton(R.string.dialog_discard_cancel, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (dialog != null) dialog.dismiss();
+            }
+        });
 
-    private boolean checkIfSaved(Uri uri) {
-        if (uri == null) {
-            Toast.makeText(this, getString(R.string.editor_toast_product_save_error),
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
-            Toast.makeText(this, getString(R.string.editor_toast_product_save_success)
-                    + uri.toString(), Toast.LENGTH_SHORT).show();
-            return true;
-        }
-    }
-
-    private boolean checkIfUpdated(int rowsAffected) {
-        if (rowsAffected == 0) {
-            Toast.makeText(this, getString(R.string.editor_toast_product_save_error),
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
-            Toast.makeText(this, getString(R.string.editor_toast_product_update_success),
-                    Toast.LENGTH_SHORT).show();
-            return true;
-        }
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
