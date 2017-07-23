@@ -12,8 +12,11 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
+
+import java.io.IOException;
 
 class InventoryCursorAdapter extends CursorAdapter {
 
@@ -46,9 +49,17 @@ class InventoryCursorAdapter extends CursorAdapter {
             holder.image.setImageResource(R.drawable.ic_image_black);
             holder.image.invalidate();
         } else {
-            Bitmap bitmap = Utils.getBitmap(context, Uri.parse(imageUri),
-                    Utils.DEFAULT_BITMAP_SCALE);
-            holder.image.setImageBitmap(bitmap);
+            boolean success = false;
+            Bitmap newImage = null;
+            try {
+                newImage = Utils.getBitmap(context, Uri.parse(imageUri),
+                        Utils.DEFAULT_BITMAP_SCALE);
+                success = true;
+            } catch (IOException e) {
+                Toast.makeText(context, context.getString(R.string.error_opening_image),
+                        Toast.LENGTH_SHORT).show();
+            }
+            if (success && newImage != null) holder.image.setImageBitmap(newImage);
         }
 
         final int quantityColIdx = cursor.getColumnIndex(ProductEntry.COL_PRODUCT_QUANTITY);

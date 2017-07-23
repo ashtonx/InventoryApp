@@ -12,7 +12,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +28,8 @@ import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
+import java.io.IOException;
+
 import static java.lang.Integer.parseInt;
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -41,8 +42,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private EditText mQuantityEditText;
     private EditText mPriceEditText;
 
-    private String mImagePath;
     private Uri mCurrItemUri;
+    private Uri mImageUri;
 
     private boolean mProductHasChanged = false;
     private final View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -80,8 +81,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         imageUriButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                 startActivityForResult(intent, GET_IMAGE);
             }
         });
@@ -156,7 +160,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             mDescriptionEditText.setText(data.getString(descriptionColIdx));
 
             int imageUriColIdx = data.getColumnIndex(ProductEntry.COL_PRODUCT_IMG_URI);
-            mImagePath = data.getString(imageUriColIdx);
+            mImageUri = Uri.parse(data.getString(imageUriColIdx));
 
             int quantityColIdx = data.getColumnIndex(ProductEntry.COL_PRODUCT_QUANTITY);
             mQuantityEditText.setText(String.valueOf(data.getInt(quantityColIdx)));
@@ -166,7 +170,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             if (price > 0) price = price / 100;
             mPriceEditText.setText(String.valueOf(price));
 
-            refreshThumbnail();
+            if (mImageUri != null) refreshThumbnail();
 
         }
     }
@@ -237,8 +241,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GET_IMAGE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                Uri selectedImageUri = data.getData();
-                mImagePath = gerRealPathFromUri(selectedImageUri);
+                mImageUri = data.getData();
+                //this is only way i found that doesn't cry about errors.
+                getContentResolver().takePersistableUriPermission(mImageUri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 refreshThumbnail();
             }
         }
@@ -255,6 +261,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         String descriptionString = mDescriptionEditText.getText().toString().trim();
+
+        if (mImageUri == null) {
+            Toast.makeText(this, R.string.editor_data_check_no_image, Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
         String quantityString = mQuantityEditText.getText().toString().trim();
         int quantity = 0;
@@ -288,7 +299,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         if (mCurrItemUri == null && TextUtils.isEmpty(nameString)
-                && TextUtils.isEmpty(descriptionString) && mImagePath == null
+                && TextUtils.isEmpty(descriptionString) && mImageUri == null
                 && TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString)) {
             return false;
         }
@@ -296,7 +307,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COL_PRODUCT_NAME, nameString);
         values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, descriptionString);
-        values.put(ProductEntry.COL_PRODUCT_IMG_URI, mImagePath);
+        values.put(ProductEntry.COL_PRODUCT_IMG_URI, mImageUri.toString());
         values.put(ProductEntry.COL_PRODUCT_QUANTITY, quantity);
         values.put(ProductEntry.COL_PRODUCT_PRICE, price);
 
@@ -339,22 +350,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         finish();
     }
 
-    private String gerRealPathFromUri(Uri contentUri) {
-        String resource = null;
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
-        if (cursor.moveToFirst()) {
-            int colIdx = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            resource = "file://" + cursor.getString(colIdx);
-        }
-        cursor.close();
-        return resource;
-    }
-
     private void refreshThumbnail() {
-        if (!TextUtils.isEmpty(mImagePath)) {
-            Bitmap newImage = Utils.getBitmap(this, Uri.parse(mImagePath), Utils.DEFAULT_BITMAP_SCALE);
-            mThumbnailImageView.setImageBitmap(newImage);
+        if (mImageUri != null) {
+            boolean success = false;
+            Bitmap newImage = null;
+            try {
+                newImage = Utils.getBitmap(this, mImageUri, Utils.DEFAULT_BITMAP_SCALE);
+                success = true;
+            } catch (IOException e) {
+                Toast.makeText(this, "ERROR: Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+            if (success && newImage != null) mThumbnailImageView.setImageBitmap(newImage);
         }
     }
 

@@ -1,17 +1,13 @@
 package com.example.android.inventoryapp;
 
-import android.Manifest;
 import android.app.LoaderManager;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -31,20 +27,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int INVENTORY_LOADER_ID = 0;
     private InventoryCursorAdapter mCursorAdapter;
 
-    int permissionRequestCode = 42;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
-                requestPermissions(permissions, permissionRequestCode);
-            }
-        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -106,25 +92,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_insert_dummy_data:
-                insertDummyProduct();
-                return true;
             case R.id.action_delete_all_entries:
                 showDeleteConfirmationDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    //Helpers
-    private void insertDummyProduct() {
-        ContentValues values = new ContentValues();
-        values.put(ProductEntry.COL_PRODUCT_NAME, "dummy NAME");
-        values.put(ProductEntry.COL_PRODUCT_DESCRIPTION, "dummy DESCRIPTION);");
-        values.put(ProductEntry.COL_PRODUCT_IMG_URI, "");
-        values.put(ProductEntry.COL_PRODUCT_PRICE, 13);
-        values.put(ProductEntry.COL_PRODUCT_QUANTITY, 42);
-        Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
     }
 
     private void deleteAllEntries() {

@@ -33,7 +33,6 @@ public class InventoryProvider extends ContentProvider {
                 PRODUCT_ID);
     }
 
-
     @Override
     public boolean onCreate() {
         mDbHelper = new InventoryDbHelper(getContext());
@@ -146,6 +145,11 @@ public class InventoryProvider extends ContentProvider {
         if (TextUtils.isEmpty(values.getAsString(ProductEntry.COL_PRODUCT_NAME))) {
             throw new IllegalArgumentException("Product requires name");
         }
+
+        if (TextUtils.isEmpty(values.getAsString(ProductEntry.COL_PRODUCT_IMG_URI))) {
+            throw new IllegalArgumentException("Product requires image");
+        }
+
         if (values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY) < 0) {
             throw new IllegalArgumentException("No support for negative quantity");
         }
@@ -169,6 +173,12 @@ public class InventoryProvider extends ContentProvider {
         if (values.containsKey(ProductEntry.COL_PRODUCT_NAME)) {
             if (TextUtils.isEmpty(values.getAsString(ProductEntry.COL_PRODUCT_NAME))) {
                 throw new IllegalArgumentException("Product requires name");
+            }
+        }
+
+        if (values.containsKey(ProductEntry.COL_PRODUCT_IMG_URI)) {
+            if (TextUtils.isEmpty(values.getAsString(ProductEntry.COL_PRODUCT_IMG_URI))) {
+                throw new IllegalArgumentException("Product requires image");
             }
         }
 

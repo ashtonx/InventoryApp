@@ -45,9 +45,10 @@
     <!--MENU-->
     <string name="menu_save">Save</string>
     <string name="menu_delete">Delete</string>
-    <string name="menu_insert_dummy_data">Insert Dummy Data</string>
     <string name="menu_delete_all_entries">Delete All Entries</string>
     <string name="empty_view_msg">There is no entries at the moment.
         Please use menu to insert Dummy data or add a new item using Button at the bottom right
     </string>
+    <string name="editor_data_check_no_image">Product requires Image</string>
+    <string name="error_opening_image">ERROR: Something went wrong</string>
 </resources>

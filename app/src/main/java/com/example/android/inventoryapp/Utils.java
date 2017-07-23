@@ -5,15 +5,15 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
+import android.os.ParcelFileDescriptor;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
-
-import static android.util.Log.wtf;
 
 final class Utils {
     Utils() {
@@ -21,19 +21,17 @@ final class Utils {
 
     public static final int DEFAULT_BITMAP_SCALE = 512;
 
-    public static Bitmap getBitmap(Context context, Uri imageUri, int MaxWidth) {
-        Bitmap bitmap = null;
-        try {
-            Bitmap temp = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
-            int newHeight = (int) (temp.getHeight() * ((float) MaxWidth / temp.getWidth()));
-            bitmap = Bitmap.createScaledBitmap(temp,
-                    MaxWidth,
-                    newHeight,
-                    true);
-        } catch (IOException e) {
-            wtf("getBitmap", e);
-        }
-        return bitmap;
+    public static Bitmap getBitmap(Context context, Uri imageUri, int MaxWidth) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                    context.getContentResolver().openFileDescriptor(imageUri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap temp = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        int newHeight = (int) (temp.getHeight() * ((float) MaxWidth / temp.getWidth()));
+        return Bitmap.createScaledBitmap(temp,
+                MaxWidth,
+                newHeight,
+                true);
     }
 
     public static void sellItem(Context context, long productId, int quantity) {

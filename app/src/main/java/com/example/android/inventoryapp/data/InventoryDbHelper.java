@@ -8,14 +8,14 @@ import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 class InventoryDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "products.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String SQL_CREATE_PRODUCT_ENTRIES =
             "CREATE TABLE " + ProductEntry.TABLE_NAME + " ("
                     + ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + ProductEntry.COL_PRODUCT_NAME + " TEXT NOT NULL,"
                     + ProductEntry.COL_PRODUCT_DESCRIPTION + " TEXT,"
-                    + ProductEntry.COL_PRODUCT_IMG_URI + " TEXT,"
+                    + ProductEntry.COL_PRODUCT_IMG_URI + " TEXT NOT NULL,"
                     + ProductEntry.COL_PRODUCT_QUANTITY + " INTEGER NOT NULL DEFAULT 0,"
                     + ProductEntry.COL_PRODUCT_PRICE + " INTEGER NOT NULL DEFAULT 0);";
 
