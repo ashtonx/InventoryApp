@@ -35,10 +35,10 @@
         <item name="android:layout_width">@dimen/empty_view_icon</item>
         <item name="android:layout_height">@dimen/empty_view_icon</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:layout_margin">@dimen/margin_large</item>
     </style>
     <style name="empty_view_text" parent="wrap_content">
-        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:layout_margin">@dimen/margin_large</item>
         <item name="android:textAppearance">?android:textAppearanceLarge</item>
         <item name="android:layout_below">@id/empty_view_icon</item>
         <item name="android:layout_centerHorizontal">true</item>
@@ -54,13 +54,13 @@
     <style name="list_item_content_container" parent="fit_horizontal_weight">
         <item name="android:layout_weight">8</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:layout_margin">@dimen/padding</item>
+        <item name="android:layout_margin">@dimen/margin</item>
     </style>
 
     <style name="list_item_stock_container" parent="fit_horizontal_weight">
         <item name="android:layout_weight">2</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:layout_margin">@dimen/padding</item>
+        <item name="android:layout_margin">@dimen/margin</item>
     </style>
 
     <style name="list_item_thumbnail">
@@ -171,6 +171,12 @@
     <style name="editor_order_more_button" parent="wrap_content">
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="floating_action_button" parent="wrap_content">
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_margin">@dimen/margin_large</item>
     </style>
 
 

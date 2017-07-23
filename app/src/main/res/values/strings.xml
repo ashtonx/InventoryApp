@@ -11,7 +11,6 @@
     <string name="list_item_sell_button">SELL</string>
 
     <!--EDITOR STRINGS-->
-    <!--<string name="editor_activity_title">Edit Product</string>-->
     <string name="editor_activity_select_image">Select Image</string>
     <string name="editor_activity_product_name">Product Name</string>
     <string name="editor_activity_product_description">Product Description</string>
@@ -30,13 +29,8 @@
     <string name="editor_toast_product_delete_error">Error Deleting Product</string>
     <string name="editor_toast_product_delete_success">Product Deleted</string>
     <string name="editor_data_check_no_name">Product requires name</string>
-    <!--<string name="editor_data_check_quantity">-->
-        <!--Wrong Quantity Format, should be an Integer Number like 42</string>-->
-    <!--<string name="editor_data_check_price">-->
-        <!--Wrong Price Format, should be a Floating Point Number like 13.99</string>-->
     <string name="editor_data_check_negative_quantity">No support for negative quantity</string>
     <string name="editor_data_check_negative_price">No support for negative price</string>
-    <!--<string name="editor_order_no_product_name">No product to order. Insert At least a name</string>-->
 
     <!--DIALOGS-->
     <string name="dialog_delete_all_entries_msg">Do you want to DELETE ALL Products?</string>

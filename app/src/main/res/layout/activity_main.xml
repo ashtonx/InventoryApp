@@ -12,6 +12,7 @@
     <RelativeLayout
         android:id="@+id/empty_view"
         style="@style/empty_view_container">
+
         <ImageView
             android:id="@+id/empty_view_icon"
             style="@style/empty_view_icon"
@@ -24,10 +25,6 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
+        style="@style/floating_action_button"
         android:src="@drawable/fab_icon"/>
 </RelativeLayout>

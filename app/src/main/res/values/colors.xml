@@ -3,7 +3,6 @@
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#484848</color>
-    <color name="colorTextOnDark">#FFFFFF</color>
     <color name="colorTextDark">@color/colorPrimaryDark</color>
     <color name="colorText">@color/colorPrimary</color>
     <color name="colorTextLight">@color/colorAccent</color>

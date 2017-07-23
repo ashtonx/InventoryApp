@@ -44,8 +44,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private String mImagePath;
     private Uri mCurrItemUri;
 
-    boolean mProductHasChanged = false;
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+    private boolean mProductHasChanged = false;
+    private final View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             mProductHasChanged = true;
@@ -261,7 +261,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (!TextUtils.isEmpty(quantityString)) {
             try {
                 quantity = parseInt(quantityString);
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {
+            }
             if (quantity < 0) {
                 Toast.makeText(this, getString(R.string.editor_data_check_negative_quantity),
                         Toast.LENGTH_SHORT).show();
@@ -270,14 +271,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         String priceString = mPriceEditText.getText().toString().trim();
-        priceString.replaceAll("D+","");
 
         int price = 0;
         if (!TextUtils.isEmpty(priceString)) {
             float tmp = 0;
             try {
                 tmp = Float.parseFloat(priceString);
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {
+            }
             if (tmp > 0) price = (int) (tmp * 100);
             else if (tmp < 0) {
                 Toast.makeText(this, getString(R.string.editor_data_check_negative_price),
@@ -350,9 +351,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         return resource;
     }
 
-    private void refreshThumbnail(){
+    private void refreshThumbnail() {
         if (!TextUtils.isEmpty(mImagePath)) {
-            Bitmap newImage=Utils.getBitmap(this, Uri.parse(mImagePath) ,Utils.DEFAULT_BITMAP_SCALE);
+            Bitmap newImage = Utils.getBitmap(this, Uri.parse(mImagePath), Utils.DEFAULT_BITMAP_SCALE);
             mThumbnailImageView.setImageBitmap(newImage);
         }
     }

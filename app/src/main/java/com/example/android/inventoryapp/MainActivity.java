@@ -26,7 +26,7 @@ import static com.example.android.inventoryapp.data.InventoryProvider.LOG_TAG;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int INVENTORY_LOADER_ID = 0;
-    InventoryCursorAdapter mCursorAdapter;
+    private InventoryCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,16 +126,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         deleteAllEntries();
-            }
-        });
+                    }
+                });
         builder.setNegativeButton(R.string.dialog_delete_cancel,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         if (dialog != null) {
                             dialog.dismiss();
-                }
-            }
-        });
+                        }
+                    }
+                });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }

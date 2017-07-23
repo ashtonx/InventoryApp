@@ -15,8 +15,10 @@ import java.io.IOException;
 
 import static android.util.Log.wtf;
 
-public final class Utils {
-        Utils(){}
+final class Utils {
+    Utils() {
+    }
+
     public static final int DEFAULT_BITMAP_SCALE = 512;
 
     public static Bitmap getBitmap(Context context, Uri imageUri, int MaxWidth) {

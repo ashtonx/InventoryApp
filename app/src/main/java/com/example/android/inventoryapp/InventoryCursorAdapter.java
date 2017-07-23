@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
-public class InventoryCursorAdapter extends CursorAdapter {
+class InventoryCursorAdapter extends CursorAdapter {
 
     public InventoryCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
@@ -75,12 +75,12 @@ public class InventoryCursorAdapter extends CursorAdapter {
     }
 
     private static class viewHolder {
-        TextView name;
-        TextView description;
-        ImageView image;
-        TextView quantity;
-        TextView price;
-        Button sellButton;
+        final TextView name;
+        final TextView description;
+        final ImageView image;
+        final TextView quantity;
+        final TextView price;
+        final Button sellButton;
 
         viewHolder(View view) {
             name = (TextView) view.findViewById(R.id.list_item_name);

@@ -85,6 +85,7 @@
                 android:text="@string/editor_activity_increase_button"/>
         </LinearLayout>
     </LinearLayout>
+
     <Button
         android:id="@+id/edit_order_more"
         style="@style/editor_order_more_button"

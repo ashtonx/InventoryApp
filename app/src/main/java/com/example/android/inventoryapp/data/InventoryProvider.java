@@ -15,11 +15,11 @@ import android.util.Log;
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 public class InventoryProvider extends ContentProvider {
-    public static String LOG_TAG = InventoryProvider.class.getSimpleName();
-    public InventoryDbHelper mDbHelper;
+    public static final String LOG_TAG = InventoryProvider.class.getSimpleName();
+    private InventoryDbHelper mDbHelper;
 
-    public static final int PRODUCTS = 100;
-    public static final int PRODUCT_ID = 101;
+    private static final int PRODUCTS = 100;
+    private static final int PRODUCT_ID = 101;
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
@@ -166,14 +166,14 @@ public class InventoryProvider extends ContentProvider {
     private int updateProduct(Uri uri, ContentValues values, String selection,
                               String[] selectionArgs) {
         if (values.size() == 0) return 0;
-        if (values.containsKey(ProductEntry.COL_PRODUCT_NAME)){
+        if (values.containsKey(ProductEntry.COL_PRODUCT_NAME)) {
             if (TextUtils.isEmpty(values.getAsString(ProductEntry.COL_PRODUCT_NAME))) {
                 throw new IllegalArgumentException("Product requires name");
             }
         }
 
         if (values.containsKey(ProductEntry.COL_PRODUCT_QUANTITY)) {
-            if (values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY) < 0)  {
+            if (values.getAsInteger(ProductEntry.COL_PRODUCT_QUANTITY) < 0) {
                 throw new IllegalArgumentException("No support for negative quantity");
             }
         }

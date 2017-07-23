@@ -2,6 +2,8 @@
 <resources>
     <dimen name="padding">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
+    <dimen name="margin">@dimen/padding</dimen>
+    <dimen name="margin_large">@dimen/padding_large</dimen>
     <dimen name="thumbnail_size">120dp</dimen>
     <dimen name="empty_view_icon">512dp</dimen>
 </resources>
