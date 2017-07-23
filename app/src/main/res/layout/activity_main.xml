@@ -9,19 +9,23 @@
         android:id="@+id/list_view_inventory"
         style="@style/fit_parent"/>
 
-    <RelativeLayout
+    <ScrollView
         android:id="@+id/empty_view"
-        style="@style/empty_view_container">
+        style="@style/fit_parent">
 
-        <ImageView
-            android:id="@+id/empty_view_icon"
-            style="@style/empty_view_icon"
-            android:src="@drawable/ic_announcement_black_24dp"/>
+        <RelativeLayout
+            style="@style/empty_view_container">
 
-        <TextView
-            style="@style/empty_view_text"
-            android:text="@string/empty_view_msg"/>
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/empty_view_icon"
+                style="@style/empty_view_icon"
+                android:src="@drawable/ic_announcement_black_24dp"/>
+
+            <TextView
+                style="@style/empty_view_text"
+                android:text="@string/empty_view_msg"/>
+        </RelativeLayout>
+    </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

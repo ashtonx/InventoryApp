@@ -31,12 +31,14 @@
     <style name="empty_view_container" parent="wrap_content">
         <item name="android:layout_centerInParent">true</item>
     </style>
+
     <style name="empty_view_icon">
         <item name="android:layout_width">@dimen/empty_view_icon</item>
         <item name="android:layout_height">@dimen/empty_view_icon</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_margin">@dimen/margin_large</item>
     </style>
+
     <style name="empty_view_text" parent="wrap_content">
         <item name="android:layout_margin">@dimen/margin_large</item>
         <item name="android:textAppearance">?android:textAppearanceLarge</item>
@@ -57,8 +59,7 @@
         <item name="android:layout_margin">@dimen/margin</item>
     </style>
 
-    <style name="list_item_stock_container" parent="fit_horizontal_weight">
-        <item name="android:layout_weight">2</item>
+    <style name="list_item_stock_container" parent="wrap_content">
         <item name="android:orientation">vertical</item>
         <item name="android:layout_margin">@dimen/margin</item>
     </style>
@@ -89,6 +90,7 @@
     </style>
 
     <style name="product_stock_and_price" parent="list_item_text_style">
+        <item name="android:layout_weight">2</item>
         <item name="android:textAppearance">?android:textAppearanceMedium</item>
         <item name="android:textColor">@color/colorTextDark</item>
         <item name="android:gravity">end</item>
@@ -113,12 +115,12 @@
 
     <style name="editor_label" parent="fit_horizontal_weight">
         <item name="android:padding">@dimen/padding</item>
-        <item name="android:layout_weight">3</item>
+        <item name="android:layout_weight">4</item>
     </style>
 
     <style name="editor_input" parent="fit_horizontal_weight">
         <item name="android:padding">@dimen/padding</item>
-        <item name="android:layout_weight">7</item>
+        <item name="android:layout_weight">6</item>
     </style>
     <!--EDITOR: GENERIC-->
     <style name="editor_label_text" parent="editor_label">

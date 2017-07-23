@@ -15,9 +15,9 @@
     <string name="editor_activity_product_name">Product Name</string>
     <string name="editor_activity_product_description">Product Description</string>
     <string name="editor_activity_quantity_in_stock">Quantity in stock</string>
-    <string name="editor_activity_decrease_button">Decrease</string>
+    <string name="editor_activity_decrease_button">-</string>
+    <string name="editor_activity_increase_button">+</string>
     <string name="editor_activity_product_quantity">Product Quantity</string>
-    <string name="editor_activity_increase_button">Increase</string>
     <string name="editor_activity_product_price">Product Price</string>
     <string name="editor_activity_order_more_button">Order more..</string>
 

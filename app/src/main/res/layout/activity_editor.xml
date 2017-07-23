@@ -1,94 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              style="@style/editor_main_container"
-              android:windowSoftInputMode="stateHidden"
-              tools:context=".EditorActivity">
-    <!--IMAGE-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fit_parent"
+    tools:context=".EditorActivity">
+
     <LinearLayout
-        style="@style/editor_container">
-
-        <ImageView
-            android:id="@+id/edit_image_preview"
-            style="@style/editor_thumbnail"
-            android:src="@drawable/ic_image_black"/>
-
-        <Button
-            android:id="@+id/edit_button_select_image"
-            style="@style/select_image_button"
-            android:text="@string/editor_activity_select_image"/>
-    </LinearLayout>
-    <!--NAME-->
-    <LinearLayout
-        style="@style/editor_container">
-
-        <TextView
-            style="@style/editor_label_text"
-            android:text="@string/editor_activity_product_name"/>
-
-        <EditText
-            android:id="@+id/edit_product_name"
-            style="@style/editor_input_text"
-            android:hint="@string/editor_activity_product_name"/>
-    </LinearLayout>
-    <!--DESCRIPTION-->
-    <LinearLayout
-        style="@style/editor_container">
-
-        <TextView
-            style="@style/editor_label_text"
-            android:text="@string/editor_activity_product_description"/>
-
-        <EditText
-            android:id="@+id/edit_product_description"
-            style="@style/editor_input_text"
-            android:hint="@string/editor_activity_product_description"/>
-    </LinearLayout>
-
-    <!--PRICE-->
-    <LinearLayout
-        style="@style/editor_container">
-
-        <TextView
-            style="@style/editor_label_text"
-            android:text="@string/editor_activity_product_price"/>
-
-        <EditText
-            android:id="@+id/edit_product_price"
-            style="@style/editor_input_price"
-            android:hint="@string/editor_activity_product_price"/>
-    </LinearLayout>
-    <!--QUANTITY-->
-    <LinearLayout
-        style="@style/editor_container">
-
-        <TextView
-            style="@style/editor_label_text"
-            android:text="@string/editor_activity_quantity_in_stock"/>
-
+        style="@style/editor_main_container">
+        <!--IMAGE-->
         <LinearLayout
-            style="@style/editor_container_quantity">
+            style="@style/editor_container">
+
+            <ImageView
+                android:id="@+id/edit_image_preview"
+                style="@style/editor_thumbnail"
+                android:src="@drawable/ic_image_black"/>
 
             <Button
-                android:id="@+id/edit_quantity_decrease"
-                style="@style/editor_input_quantity"
-                android:text="@string/editor_activity_decrease_button"/>
+                android:id="@+id/edit_button_select_image"
+                style="@style/select_image_button"
+                android:text="@string/editor_activity_select_image"/>
+        </LinearLayout>
+        <!--NAME-->
+        <LinearLayout
+            style="@style/editor_container">
+
+            <TextView
+                style="@style/editor_label_text"
+                android:text="@string/editor_activity_product_name"/>
 
             <EditText
-                android:id="@+id/edit_product_quantity"
-                style="@style/editor_input_quantity_text"
-                android:hint="@string/editor_activity_product_quantity"/>
-
-            <Button
-                android:id="@+id/edit_quantity_increase"
-                style="@style/editor_input_quantity"
-                android:text="@string/editor_activity_increase_button"/>
+                android:id="@+id/edit_product_name"
+                style="@style/editor_input_text"
+                android:hint="@string/editor_activity_product_name"/>
         </LinearLayout>
+        <!--DESCRIPTION-->
+        <LinearLayout
+            style="@style/editor_container">
+
+            <TextView
+                style="@style/editor_label_text"
+                android:text="@string/editor_activity_product_description"/>
+
+            <EditText
+                android:id="@+id/edit_product_description"
+                style="@style/editor_input_text"
+                android:hint="@string/editor_activity_product_description"/>
+        </LinearLayout>
+
+        <!--PRICE-->
+        <LinearLayout
+            style="@style/editor_container">
+
+            <TextView
+                style="@style/editor_label_text"
+                android:text="@string/editor_activity_product_price"/>
+
+            <EditText
+                android:id="@+id/edit_product_price"
+                style="@style/editor_input_price"
+                android:hint="@string/editor_activity_product_price"/>
+        </LinearLayout>
+        <!--QUANTITY-->
+        <LinearLayout
+            style="@style/editor_container">
+
+            <TextView
+                style="@style/editor_label_text"
+                android:text="@string/editor_activity_quantity_in_stock"/>
+
+            <LinearLayout
+                style="@style/editor_container_quantity">
+
+                <Button
+                    android:id="@+id/edit_quantity_decrease"
+                    style="@style/editor_input_quantity"
+                    android:text="@string/editor_activity_decrease_button"/>
+
+                <EditText
+                    android:id="@+id/edit_product_quantity"
+                    style="@style/editor_input_quantity_text"
+                    android:hint="@string/editor_activity_product_quantity"/>
+
+                <Button
+                    android:id="@+id/edit_quantity_increase"
+                    style="@style/editor_input_quantity"
+                    android:text="@string/editor_activity_increase_button"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/edit_order_more"
+            style="@style/editor_order_more_button"
+            android:text="@string/editor_activity_order_more_button"/>
+
     </LinearLayout>
-
-    <Button
-        android:id="@+id/edit_order_more"
-        style="@style/editor_order_more_button"
-        android:text="@string/editor_activity_order_more_button"/>
-
-</LinearLayout>
+</ScrollView>
