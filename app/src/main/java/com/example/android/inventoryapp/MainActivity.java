@@ -113,14 +113,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         deleteAllEntries();
                     }
                 });
-        builder.setNegativeButton(R.string.dialog_delete_cancel,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (dialog != null) {
-                            dialog.dismiss();
-                        }
-                    }
-                });
+        builder.setNegativeButton(R.string.dialog_delete_cancel,null);
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }

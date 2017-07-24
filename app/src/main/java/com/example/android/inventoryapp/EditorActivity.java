@@ -374,12 +374,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 deleteProduct();
             }
         });
-        builder.setNegativeButton(R.string.dialog_delete_cancel, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (dialog != null) dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton(R.string.dialog_delete_cancel, null);
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -389,12 +384,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.dialog_discard_msg);
         builder.setPositiveButton(R.string.dialog_discard_confirm, discardButtonClickListener);
-        builder.setNegativeButton(R.string.dialog_discard_cancel, new OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (dialog != null) dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton(R.string.dialog_discard_cancel, null);
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
